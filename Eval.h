@@ -407,12 +407,14 @@ constexpr auto det(addexpr<C, branchexpr<Ts...>>) {
 template <typename T, typename... Vs, EnableIf<!has_symbolic_determinant(T{})> = 0>
 auto determinant(baseexpr<T>, const Map<Vs...>& values) {
   constexpr auto jac = jacobian(T{});
+  cout << "jac type:\n\t" << typeid(jac).name() << endl;
   return rcp(abs(det(evaluate(jac, values))));
 }
 
 template <typename T, typename... Vs, EnableIf<has_symbolic_determinant(T{})> = 0>
 auto determinant(baseexpr<T>, const Map<Vs...>& values) {
   constexpr auto d = det(T{});
+  cout << "det type:\n\t" << typeid(d).name() << endl;
   return evaluate(d, values);
 }
 
