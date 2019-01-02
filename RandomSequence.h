@@ -58,7 +58,7 @@ struct Element : Object {
   Element() = default;
 
   template <typename... Vs>
-  Element(bool valid, const scalar_t& value, Vs&&... vs) 
+  Element(bool valid, const scalar_t& value, Vs&&... vs)
     : value{value}
     , valid{valid}
   {
@@ -67,7 +67,7 @@ struct Element : Object {
   }
 
   template <typename... Vs>
-  Element(const scalar_t& value, Vs&&... vs) 
+  Element(const scalar_t& value, Vs&&... vs)
     : Element(true, value, vs...)
   {
   }
@@ -78,7 +78,7 @@ struct Element : Object {
 
   template <typename Name>
   constexpr bool HasKey(Name) const {
-    return data.HasKey(Name{}); 
+    return data.HasKey(Name{});
   }
 
   template <typename Name>
@@ -268,7 +268,7 @@ struct balance_heuristic {
   }
 };
 
-  
+
 template <typename T>
 struct SequenceElement;
 
@@ -400,6 +400,14 @@ struct RandomSequence {
 
       auto pdf = strategy->Pdf(query_seq, query_samples, sample_index,
                                reversed[sample_index], source_distribution_helper);
+      #if !defined NDEBUG
+      printf("%16g", pdf);
+      if(strategy->output_size == 2)
+        printf("****************");
+      if(pdf == 0 || std::isnan(pdf) || strategy_index == N-1)
+        cout << endl;
+      #endif
+
       if (pdf == 0 || std::isnan(pdf)) {
         return 0;
       }
@@ -454,7 +462,7 @@ struct CombinedSample {
       weighted_samples.push_back(WeightedSample{samples[i].get(), Weight(samples, i)});
     }
   }
- 
+
   auto begin() {
     return weighted_samples.begin();
   }
@@ -476,7 +484,7 @@ struct CombinedSample {
 
     std::vector<double> pdfs(samples.size());
     for (std::size_t j = 0, N = samples.size(); j < N; ++j) {
-      pdfs[j] = samples[j].Pdf(sample); 
+      pdfs[j] = samples[j].Pdf(sample);
     }
 
     return pdfs;
@@ -487,7 +495,7 @@ struct CombinedSample {
 
     std::vector<double> pdfs(samples.size());
     for (std::size_t j = 0, N = samples.size(); j < N; ++j) {
-      pdfs[j] = samples[j].get().Pdf(sample); 
+      pdfs[j] = samples[j].get().Pdf(sample);
     }
 
     return pdfs;
@@ -550,7 +558,7 @@ struct combine_t<balance_heuristic> {
       , otherwise(rv)
     );
 
-    return balance(branch_rv); 
+    return balance(branch_rv);
   }
 
   template <bool Computed, typename E, typename Tuple, typename Data, typename... Ts>
@@ -802,7 +810,7 @@ struct PdfFn : CachedFunction<PdfFn<T>, Real> {
         boost::hash_combine(seed, seq[i]);
       }
     }
-    
+
     for (std::size_t i = 0, N = query_samples.size(); i < N; ++i) {
       boost::hash_combine(seed, query_samples[i].get());
     }
@@ -831,7 +839,7 @@ struct node_output_size_t<hana::tuple<Ts...>> {
 };
 
 template <typename T>
-constexpr std::size_t node_output_size = node_output_size_t<T>::N; 
+constexpr std::size_t node_output_size = node_output_size_t<T>::N;
 
 template <typename T, typename R, typename... Args>
 constexpr auto get_output_size(Node<R>& node, Args&&... args) {
@@ -1088,7 +1096,7 @@ template <typename T, bool ComputedB, typename B, typename MapB, typename DataB>
 Real Pdf(const SequenceElement<T>& sample, random_var<ComputedB, B, MapB, DataB> distribution_rv) {
   return Pdf(sample.Value(), distribution_rv);
 }
-  
+
 template <typename T>
 Real Pdf(const RandomSequence<T>& sample_seq, const RandomSequence<T>& distribution_seq) {
   if (sample_seq.Size() != distribution_seq.Size()) {
@@ -1249,7 +1257,7 @@ auto StrategySequence<S>::end() const {
 
 template <typename S>
 StrategySequence<S> StrategySequence<S>::Slice(std::size_t I, std::size_t N) const {
-  return {slice_impl(I, N, store)}; 
+  return {slice_impl(I, N, store)};
 }
 
 template <typename Store>
